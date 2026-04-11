@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vite/
+.claude/
+.sdr-cache/
+.ops/
+ops_live.md
+codex_chat_backup.txt
+HANDOFF_*.md
+net-capture.json

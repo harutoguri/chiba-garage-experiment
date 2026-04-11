@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SOLO test — 1本だけ再生</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; color:#0f0; font:11px/1.4 monospace; overflow:hidden; }
+#video-wrap { position:fixed; inset:0; }
+video { width:100%; height:100%; object-fit:cover; }
+#log { position:fixed; bottom:0; left:0; right:0; max-height:55vh; overflow-y:auto;
+  background:rgba(0,0,0,0.85); padding:6px 8px; z-index:100; font:10px/1.3 monospace; color:#0f0; }
+#status { position:fixed; top:8px; left:8px; right:8px; z-index:100;
+  font:14px/1.4 monospace; color:#fff; text-shadow:0 0 4px #000; }
+#solo-badge { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:200;
+  font:bold 28px/1.2 monospace; color:#ff0; text-shadow:0 0 8px #000; pointer-events:none;
+  transition:opacity 0.5s; }
+</style>
+</head>
+<body>
+<div id="solo-badge">★ SOLO TEST PAGE ★<br>React無し・動画1本のみ</div>
+<div id="status">SOLO test — loading...</div>
+<div id="video-wrap"></div>
+<div id="log"></div>
+<script>
+(function() {
+  var t0 = performance.now();
+  var logEl = document.getElementById('log');
+  var statusEl = document.getElementById('status');
+  var BUNNY_CDN = 'https://vz-2e234254-464.b-cdn.net';
+
+  function log(msg) {
+    var elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+    var line = '+' + elapsed + 's  ' + msg;
+    logEl.textContent += line + '\n';
+    logEl.scrollTop = logEl.scrollHeight;
+    console.log('[SOLO] ' + line);
+  }
+
+  function ct(tag, detail) {
+    log(tag + '  ' + (detail || ''));
+    // サーバーにも送信
+    try {
+      navigator.sendBeacon('/api/debug-log', JSON.stringify({
+        lines: ['[SOLO] +' + ((performance.now() - t0)/1000).toFixed(1) + 's ' + tag + ' ' + (detail || '')]
+      }));
+    } catch(e) {}
+  }
+
+  function fmtBuf(video) {
+    var b = video.buffered;
+    if (!b || b.length === 0) return '[empty]';
+    var parts = [];
+    for (var i = 0; i < b.length; i++) {
+      parts.push(b.start(i).toFixed(2) + '-' + b.end(i).toFixed(2));
+    }
+    return '[' + parts.join(',') + ']';
+  }
+
+  // ── Step 1: API から最初の動画IDを取得 ──
+  ct('fetch_start', 'listWithMedia');
+  var fetchT0 = performance.now();
+  fetch('/api/trpc/vehicles.listWithMedia?input=%7B%22json%22%3Anull%2C%22meta%22%3A%7B%22values%22%3A%5B%22undefined%22%5D%7D%7D')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var fetchDur = performance.now() - fetchT0;
+      var result = data && data.result && data.result.data && data.result.data.json;
+      if (!result || !result.vehicles || !result.mediaMap) {
+        ct('FATAL', 'no vehicles in API response');
+        return;
+      }
+      ct('fetch_done', 'dur=' + fetchDur.toFixed(0) + 'ms vehicles=' + result.vehicles.length);
+
+      // 最初の動画のbunnyVideoIdを取得
+      var bunnyId = null;
+      for (var i = 0; i < result.vehicles.length; i++) {
+        var v = result.vehicles[i];
+        var media = result.mediaMap[v.id];
+        if (!media) continue;
+        var sorted = media.slice().sort(function(a,b) { return (a.displayOrder||0) - (b.displayOrder||0); });
+        for (var j = 0; j < sorted.length; j++) {
+          if (sorted[j].type === 'video' && sorted[j].bunnyVideoId) {
+            bunnyId = sorted[j].bunnyVideoId;
+            break;
+          }
+        }
+        if (bunnyId) break;
+      }
+
+      if (!bunnyId) {
+        ct('FATAL', 'no bunnyVideoId found');
+        return;
+      }
+      ct('video_id', bunnyId.slice(0,8));
+      startVideo(bunnyId);
+    })
+    .catch(function(e) {
+      ct('FATAL', 'fetch error: ' + e.message);
+    });
+
+  // ── Step 2: video要素を作成して再生 ──
+  function startVideo(bunnyId) {
+    var url = BUNNY_CDN + '/' + bunnyId + '/720p/video.m3u8';
+    ct('create_video', url.slice(-40));
+
+    var video = document.createElement('video');
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.loop = true;
+    video.preload = 'auto';
+    // ★ 全画面サイズで作成（v87j: compositing対策）
+    video.style.cssText = 'width:100%;height:100%;object-fit:cover';
+
+    // ── イベントリスナー ──
+    var progressN = 0;
+    var stalledN = 0;
+    var waitingN = 0;
+    var suspendN = 0;
+    var playingReached = false;
+
+    video.addEventListener('loadstart', function() { ct('loadstart'); });
+    video.addEventListener('loadedmetadata', function() {
+      ct('loadedmetadata', video.videoWidth + 'x' + video.videoHeight);
+    });
+    video.addEventListener('loadeddata', function() {
+      ct('loadeddata', 'rs=' + video.readyState + ' buf=' + fmtBuf(video));
+    });
+    video.addEventListener('canplay', function() {
+      ct('canplay', 'buf=' + fmtBuf(video));
+    });
+    video.addEventListener('canplaythrough', function() {
+      ct('canplaythrough', 'buf=' + fmtBuf(video));
+    });
+    video.addEventListener('playing', function() {
+      playingReached = true;
+      var elapsed = performance.now() - t0;
+      ct('PLAYING', 'total=' + elapsed.toFixed(0) + 'ms buf=' + fmtBuf(video) + ' res=' + video.videoWidth + 'x' + video.videoHeight);
+      statusEl.textContent = 'PLAYING  +' + (elapsed/1000).toFixed(1) + 's  ' + video.videoWidth + 'x' + video.videoHeight;
+      statusEl.style.color = '#0f0';
+      // バッジを消す
+      var badge = document.getElementById('solo-badge');
+      if (badge) badge.style.opacity = '0';
+    });
+    video.addEventListener('waiting', function() {
+      waitingN++;
+      ct('waiting', '#' + waitingN + ' rs=' + video.readyState + ' buf=' + fmtBuf(video));
+    });
+    video.addEventListener('stalled', function() {
+      stalledN++;
+      if (stalledN <= 3) ct('stalled', '#' + stalledN);
+    });
+    video.addEventListener('suspend', function() {
+      suspendN++;
+      ct('suspend', '#' + suspendN + ' buf=' + fmtBuf(video));
+    });
+    video.addEventListener('progress', function() {
+      progressN++;
+      // 5回ごとにログ
+      if (progressN <= 3 || progressN % 5 === 0) {
+        ct('progress', '#' + progressN + ' buf=' + fmtBuf(video));
+      }
+    });
+    video.addEventListener('error', function() {
+      ct('ERROR', video.error ? video.error.code + ': ' + video.error.message : 'unknown');
+    });
+    video.addEventListener('resize', function() {
+      ct('resize', video.videoWidth + 'x' + video.videoHeight);
+    });
+
+    // ── DOMに追加 ──
+    document.getElementById('video-wrap').appendChild(video);
+
+    // ── src設定 + load + play ──
+    ct('set_src');
+    video.src = url;
+    video.load();
+
+    ct('play_call');
+    video.play().then(function() {
+      ct('play_promise_resolved');
+    }).catch(function(e) {
+      ct('play_promise_rejected', e.name + ': ' + e.message);
+    });
+
+    // ── バッファポーリング ──
+    var pollCount = 0;
+    var pollTimer = setInterval(function() {
+      if (playingReached && pollCount > 3) {
+        clearInterval(pollTimer);
+        ct('POLL_STOP', 'playing reached, polls=' + pollCount);
+        return;
+      }
+      pollCount++;
+      if (pollCount > 40) {
+        clearInterval(pollTimer);
+        ct('POLL_TIMEOUT', '40 polls without playing');
+        return;
+      }
+      ct('BUF' + pollCount, 'rs=' + video.readyState + ' nw=' + video.networkState +
+        ' paused=' + video.paused + ' ct=' + video.currentTime.toFixed(3) +
+        ' res=' + video.videoWidth + 'x' + video.videoHeight +
+        ' buf=' + fmtBuf(video) +
+        ' prog=' + progressN + ' wait=' + waitingN + ' susp=' + suspendN);
+    }, 1000);
+  }
+
+  // ── load イベント ──
+  window.addEventListener('load', function() {
+    ct('LOAD_EVENT', '+' + performance.now().toFixed(0) + 'ms');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+ALTER TABLE `vehicles` ADD `isConsignment` boolean DEFAULT false;

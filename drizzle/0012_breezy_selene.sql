@@ -1,0 +1,1 @@
+ALTER TABLE `business_metrics` ADD `isForecast` boolean DEFAULT false;

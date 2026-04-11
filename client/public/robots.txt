@@ -1,0 +1,12 @@
+# チバガレージ - robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://chiba-garage.com/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Disallow admin pages
+Disallow: /admin

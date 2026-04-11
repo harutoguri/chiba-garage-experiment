@@ -1,0 +1,1 @@
+ALTER TABLE `vehicle_media` ADD `bunnyVideoId` varchar(64);
