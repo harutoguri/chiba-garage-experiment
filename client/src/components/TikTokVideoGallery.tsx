@@ -11,7 +11,7 @@ import { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } fr
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Info, X } from "lucide-react";
 import { getMp4Url, getBunnyThumbnailUrl, getOptimalImageUrl } from "@/lib/bunnyUrls";
 
-const BUILD_ID = "3u88";
+const BUILD_ID = "3u94";
 
 // blob URLキャッシュ（戻りスワイプ用）
 const _blobCache = new Map<string, string>(); // mp4Url → blob URL
@@ -499,13 +499,12 @@ export function MediaCell({
         const doPlay = (tag: string, v: HTMLVideoElement) => {
           if (played || cancelled) return;
           played = true;
-          // ★ 3u59: play成功後にthumb→video切替（AbortError時はthumb維持で黒画面防止）
           remoteLog(tag, vehicleId, "rs=", v.readyState);
           v.play().then(() => {
             if (cancelled) return;
             revealVideo(tag, v);
           }).catch((e: Error) => {
-            played = false; // AbortError時は再試行可能にリセット
+            played = false; // AbortError時は再試行可能に戻す
             remoteLog("play-err", vehicleId, tag, e.name);
           });
         };
@@ -533,7 +532,6 @@ export function MediaCell({
             video.removeEventListener("canplay", onCanPlayEarly);
             video.removeEventListener("loadeddata", onLoadedDataEarly);
           });
-          doPlay("immediate-play", video);
         } else if (hasEarlyPromise) {
           // ★ 3u6: direct-first起動（blob全量待ちをやめる）
           // video.srcにdirect URLを即設定 → progressive再生開始
@@ -557,8 +555,6 @@ export function MediaCell({
           const onCanPlayDirect = () => doPlay("canplay", video);
           video.addEventListener("canplay", onCanPlayDirect, { once: true });
           cleanups.push(() => video.removeEventListener("canplay", onCanPlayDirect));
-          doPlay("immediate-play", video);
-
         } else {
           // bootstrapなし → blob cache確認 → 通常フロー（キー=mp4Url）
           const cachedBlob = _blobCache.get(mp4Url);
@@ -580,7 +576,6 @@ export function MediaCell({
           const onCanPlay2 = () => doPlay("canplay", video);
           video.addEventListener("canplay", onCanPlay2, { once: true });
           cleanups.push(() => video.removeEventListener("canplay", onCanPlay2));
-          doPlay("immediate-play", video);
         }
 
         // ★ 3u22: 3秒 play safety net（rs≥2のみ。rs<2はloadeddata/canplayリスナーに委任）
