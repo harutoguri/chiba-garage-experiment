@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>チバガレージ サイト指摘まとめ（担当者向け）</title>
+<style>
+  :root { --bg:#0f1115; --card:#171a21; --txt:#e7eaf0; --muted:#9aa3b2;
+          --red:#ff5c5c; --yellow:#ffcf5c; --orange:#ff9f5c; --green:#5cd98a;
+          --line:#272b34; --accent:#4ea1ff; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; background:var(--bg); color:var(--txt);
+         font-family:-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+         line-height:1.75; font-size:16px; }
+  .wrap { max-width:820px; margin:0 auto; padding:20px 16px 80px; }
+  h1 { font-size:23px; margin:8px 0 4px; }
+  .sub { color:var(--muted); font-size:13px; margin-bottom:18px; }
+  h2 { font-size:19px; margin:32px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  h3 { font-size:16px; margin:18px 0 6px; }
+  p { margin:8px 0; }
+  ul { margin:8px 0; padding-left:22px; }
+  li { margin:5px 0; }
+  code, pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  code { background:#0a0c10; color:#ffd9a0; padding:1px 6px; border-radius:5px; font-size:13px; }
+  pre { background:#0a0c10; padding:12px 14px; border-radius:10px; overflow-x:auto;
+        font-size:12.5px; color:#cfe3ff; border:1px solid var(--line); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+          padding:14px 16px; margin:14px 0; }
+  .red { border-left:4px solid var(--red); }
+  .yellow { border-left:4px solid var(--yellow); }
+  .orange { border-left:4px solid var(--orange); }
+  .green { border-left:4px solid var(--green); }
+  .blue { border-left:4px solid var(--accent); }
+  .tag { display:inline-block; font-size:12px; font-weight:700; padding:2px 9px;
+         border-radius:999px; margin-right:8px; vertical-align:middle; }
+  .t-red{background:rgba(255,92,92,.16);color:var(--red);}
+  .t-yellow{background:rgba(255,207,92,.16);color:var(--yellow);}
+  .t-orange{background:rgba(255,159,92,.16);color:var(--orange);}
+  .t-green{background:rgba(92,217,138,.16);color:var(--green);}
+  .t-blue{background:rgba(78,161,255,.16);color:var(--accent);}
+  .lead { background:linear-gradient(180deg,#1b2330,#171a21); border:1px solid var(--line);
+          border-radius:14px; padding:16px; margin:16px 0; font-size:15.5px; }
+  ol.steps { counter-reset:s; list-style:none; padding-left:0; }
+  ol.steps li { counter-increment:s; position:relative; padding:8px 8px 8px 44px; margin:6px 0;
+                background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  ol.steps li::before { content:counter(s); position:absolute; left:10px; top:50%;
+                transform:translateY(-50%); width:24px; height:24px; border-radius:50%;
+                background:var(--accent); color:#04101f; font-weight:800; font-size:13px;
+                display:flex; align-items:center; justify-content:center; }
+  .copybar { position:sticky; top:0; z-index:10; background:rgba(15,17,21,.92);
+             backdrop-filter:blur(8px); padding:10px 0; margin:-20px -16px 10px; }
+  .copybtn { display:block; width:calc(100% - 32px); margin:0 16px; padding:13px;
+             border:none; border-radius:12px; background:var(--accent); color:#04101f;
+             font-size:16px; font-weight:800; cursor:pointer; transition:.15s; }
+  .copybtn:active { transform:scale(.985); }
+  .copybtn.done { background:var(--green); }
+  strong { color:#fff; }
+  .muted { color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; margin:8px 0; }
+  th,td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+  th { background:#0a0c10; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="copybar">
+    <button class="copybtn" id="copyBtn">📋 全文をコピー（担当者へ送る用）</button>
+  </div>
+
+  <h1>チバガレージ サイト 指摘まとめ（ホームページ担当者向け）</h1>
+  <div class="sub">対象: https://chibagarage.com ／ コード調査ベースの俯瞰レビュー</div>
+
+  <div class="lead">
+    <strong>全体所感：</strong>作り込み（動画再生・UI・管理画面・画像/動画パイプライン）は本格的でレベルが高い。
+    ただし<strong>SEOの土台に致命的なミス（ドメイン不一致）</strong>があり、中古車屋の生命線である
+    「検索流入」が今ほぼ機能していない恐れが高い。下記を<strong>重要度順</strong>に対応してほしい。
+  </div>
+
+  <!-- ===================== 最優先 ===================== -->
+  <h2><span class="tag t-red">最優先</span>致命的・今すぐ直す（SEO土台）</h2>
+
+  <div class="card red">
+    <h3>1. サイト内のドメイン宣言が全部間違っている（最重要）</h3>
+    <p>公開ドメインは <strong>chibagarage.com（ハイフン無し）</strong>。だがコード内の宣言が全て <strong>chiba-garage.com（ハイフン有り）</strong>＝別ドメインを指している。</p>
+<pre>client/index.html:15   canonical    = https://chiba-garage.com/   ← 別ドメイン
+client/index.html:19   og:url       = https://chiba-garage.com/
+client/index.html:28   twitter:url  = https://chiba-garage.com/
+client/index.html:66   JSON-LD url  = https://chiba-garage.com/
+client/public/robots.txt:6  Sitemap: https://chiba-garage.com/sitemap.xml</pre>
+    <p><strong>影響：</strong>canonicalが存在しない別ドメインを指すため、Googleが chibagarage.com をインデックスから外す／評価を渡さない恐れ。SNSシェアのOGPも壊れる。</p>
+    <p><strong>対応：</strong>上記5箇所を chibagarage.com に統一（www有無もどちらかに統一してリダイレクト設定）。リスクゼロ・効果特大。</p>
+  </div>
+
+  <div class="card red">
+    <h3>2. sitemap.xml が実在しない</h3>
+    <p>robots.txt で宣言しているが、<code>/sitemap.xml</code> へアクセスするとXMLではなく<strong>SPAの空HTMLが返る</strong>＝ファイルが無い。各車両・各ページのURLを列挙した sitemap.xml を生成・配信する（在庫更新に追従できるよう動的生成が理想）。</p>
+  </div>
+
+  <div class="card red">
+    <h3>3. 中身が検索エンジンに見えない（SSR/プリレンダ無し）</h3>
+    <p>サーバーは全ルートに同じ<strong>空のHTMLシェル</strong>を返し、車両情報はJSで後描画（<code>server/_core/index.ts</code>）。クローラーにはヘッダー文言しか見えず、<strong>個々の車両（本文・写真・価格・車種名）がインデックスされない</strong>。</p>
+    <p><strong>対応：</strong>少なくとも車両詳細ページはプリレンダリング、最低でもサーバー側で各車両の <code>title/description/OGP/JSON-LD(Car/Vehicle schema)</code> をHTMLに埋め込む。「車種名 中古 大崎市」で当たる個別ページを作るのが集客の鍵。</p>
+  </div>
+
+  <div class="card red">
+    <h3>4. ページ別メタタグが無い</h3>
+    <p><code>/buy /sell /about /consignment</code> が全てトップと同じ title・description を使い回し（Homeのみ document.title を更新）。各ページ固有の title/description/canonical を設定する（react-helmet 等の導入）。</p>
+  </div>
+
+  <!-- ===================== 戦略 ===================== -->
+  <h2><span class="tag t-yellow">戦略</span>UX設計の再考（俯瞰で一番大きい論点）</h2>
+
+  <div class="card yellow">
+    <h3>TikTok型の縦スワイプUIをメイン導線にしてよいか</h3>
+    <p>動画体験の完成度は高い。だが<strong>「車を買う客」の行動とズレている</strong>：</p>
+    <ul>
+      <li><strong>絞り込めない</strong>（価格・年式・走行距離・車種・ボディタイプでのフィルタが無い）。在庫が増えるほど目的の1台にたどり着けない。</li>
+      <li><strong>比較できない</strong>（一覧で並べて見比べる導線が無い）。</li>
+      <li><strong>検索できない</strong>。</li>
+    </ul>
+    <p><strong>提案：</strong>トップは<strong>グリッド一覧＋絞り込み検索</strong>を主役にし、TikTok型は「没入して見る」サブ体験に。<strong>「映える」より「探せる・比べられる」を優先</strong>するのが売上に直結する。</p>
+  </div>
+
+  <!-- ===================== 技術品質 ===================== -->
+  <h2><span class="tag t-blue">品質</span>技術・コード面の指摘</h2>
+
+  <div class="card blue">
+    <h3>パフォーマンス</h3>
+    <ul>
+      <li><code>&lt;img&gt;</code> に <code>loading="lazy"</code>・<code>srcset</code> が無い → 一覧の帯域と表示速度に効くので追加。</li>
+      <li><code>AdminDashboard.tsx</code> が約119KB/2,884行、<code>TikTokVideoGallery.tsx</code> が約64KB/1,721行と巨大。タブ/機能単位で分割推奨（保守性・初期ロード）。</li>
+      <li>recharts（重いチャート）を About 用に読み込み → 影響範囲を確認。</li>
+      <li><span class="muted">※コード分割・画像/動画最適化・CDN preconnect・early-fetch は既に良く出来ている。</span></li>
+    </ul>
+  </div>
+
+  <div class="card blue">
+    <h3>本番ビルドの作法</h3>
+    <ul>
+      <li><strong>console.log が本番でも約63個発火</strong>（性能ログ・診断）→ ビルド時に除去（esbuild の <code>drop:["console"]</code> 等）。</li>
+      <li><strong>エラーの握りつぶし</strong>：<code>.catch(() =&gt; {})</code> が多数。失敗が見えず、初回再生遅延等の原因究明を妨げる。最低限ログ/トースト表示を。</li>
+      <li><code>/api/*</code> の CORS が <code>Access-Control-Allow-Origin: *</code>。LAN配信都合なら可だが、公開APIなら許可オリジンを絞る。</li>
+    </ul>
+  </div>
+
+  <div class="card blue">
+    <h3>リポジトリ衛生</h3>
+    <ul>
+      <li>未使用のバックアップファイル <code>*_3u4_baseline.tsx</code>（Admin/Gallery）がリポジトリに残存 → 削除 or 退避。</li>
+      <li><code>.hls-cache/ .mp4-cache/ .sdr-thumb-cache/ .thumb-cache/ .upload-originals/ .db-backups/</code> 等のキャッシュ・DBバックアップが混入 → <code>.gitignore</code> で除外。</li>
+    </ul>
+  </div>
+
+  <div class="card blue">
+    <h3>アクセシビリティ</h3>
+    <ul>
+      <li>動画ギャラリーがマウス/タッチ専用。<strong>キーボード操作の代替</strong>と<strong>モーダルのフォーカストラップ</strong>が無い。</li>
+      <li>スキップリンク（skip-to-content）無し。動画にキャプション/字幕無し。</li>
+      <li><span class="muted">※header/main等のセマンティック構造、FABのaria-label、パンくず/ページネーションのaria対応は出来ている。</span></li>
+    </ul>
+  </div>
+
+  <div class="card blue">
+    <h3>テスト</h3>
+    <ul>
+      <li>サーバー側ユニットテストは10ファイルあり。<strong>クライアントのテスト・E2Eが無い</strong> → 主要導線（車両閲覧・管理CRUD）に Playwright 等のE2Eを。</li>
+    </ul>
+  </div>
+
+  <!-- ===================== 良い点 ===================== -->
+  <h2><span class="tag t-green">良い点</span>維持すべき強み</h2>
+  <div class="card green">
+    <ul>
+      <li>JSON-LD（AutoDealer）・OGP・geoメタなど<strong>SEOの部品は揃っている</strong>（ドメイン修正で一気に活きる）。</li>
+      <li>画像最適化（sharpでWebP/JPEG 3サイズ）、HLG→SDR変換、Bunny CDN、early-fetch等<strong>性能設計が本格的</strong>。</li>
+      <li>特商法ページ・古物商許可番号（第221190001219号）あり＝<strong>法令面OK</strong>。</li>
+      <li>管理画面（車両/メディア/ニュース/業績指標CRUD）が充実。LINE/電話/メール/Instagram の導線あり。</li>
+    </ul>
+  </div>
+
+  <!-- ===================== 順番 ===================== -->
+  <h2>対応おすすめ順</h2>
+  <ol class="steps">
+    <li><strong>ドメイン5箇所を chibagarage.com に統一</strong>（数分・最重要・リスクゼロ）</li>
+    <li><strong>sitemap.xml 生成 ＋ 車両ページのメタ/プリレンダ対応</strong></li>
+    <li><strong>ページ別メタタグの設定</strong>（/buy /sell /about /consignment）</li>
+    <li><strong>絞り込み検索付き一覧をトップに</strong>（戦略判断）</li>
+    <li><strong>本番ビルドのconsole除去・エラー握りつぶし解消・リポジトリ衛生</strong></li>
+  </ol>
+
+</div>
+
+<script>
+const PLAIN = `チバガレージ サイト 指摘まとめ（ホームページ担当者向け）
+対象: https://chibagarage.com ／ コード調査ベースの俯瞰レビュー
+
+【全体所感】
+作り込み（動画再生・UI・管理画面・画像/動画パイプライン）は本格的でレベルが高い。ただしSEOの土台に致命的なミス（ドメイン不一致）があり、中古車屋の生命線である検索流入が今ほぼ機能していない恐れが高い。下記を重要度順に対応してほしい。
+
+════════════════════════════════
+■ 最優先：致命的・今すぐ直す（SEO土台）
+════════════════════════════════
+
+1. サイト内のドメイン宣言が全部間違っている（最重要）
+公開ドメインは chibagarage.com（ハイフン無し）。だがコード内の宣言が全て chiba-garage.com（ハイフン有り）＝別ドメインを指している。
+  client/index.html:15   canonical   = https://chiba-garage.com/   ← 別ドメイン
+  client/index.html:19   og:url      = https://chiba-garage.com/
+  client/index.html:28   twitter:url = https://chiba-garage.com/
+  client/index.html:66   JSON-LD url = https://chiba-garage.com/
+  client/public/robots.txt:6  Sitemap: https://chiba-garage.com/sitemap.xml
+影響：canonicalが存在しない別ドメインを指すため、Googleが chibagarage.com をインデックスから外す/評価を渡さない恐れ。SNSシェアのOGPも壊れる。
+対応：上記5箇所を chibagarage.com に統一（www有無もどちらかに統一しリダイレクト）。リスクゼロ・効果特大。
+
+2. sitemap.xml が実在しない
+robots.txt で宣言しているが /sitemap.xml はSPAの空HTMLが返る＝ファイルが無い。各車両・各ページのURLを列挙した sitemap.xml を生成・配信（在庫更新に追従できる動的生成が理想）。
+
+3. 中身が検索エンジンに見えない（SSR/プリレンダ無し）
+サーバーは全ルートに同じ空のHTMLシェルを返し、車両情報はJSで後描画（server/_core/index.ts）。クローラーにはヘッダー文言しか見えず、個々の車両（本文・写真・価格・車種名）がインデックスされない。
+対応：少なくとも車両詳細ページはプリレンダリング、最低でもサーバー側で各車両の title/description/OGP/JSON-LD(Car/Vehicle schema) をHTMLに埋め込む。「車種名 中古 大崎市」で当たる個別ページが集客の鍵。
+
+4. ページ別メタタグが無い
+/buy /sell /about /consignment が全てトップと同じ title・description を使い回し（Homeのみ document.title 更新）。各ページ固有の title/description/canonical を設定（react-helmet 等）。
+
+════════════════════════════════
+■ 戦略：UX設計の再考（一番大きい論点）
+════════════════════════════════
+
+TikTok型の縦スワイプUIをメイン導線にしてよいか
+動画体験の完成度は高いが、「車を買う客」の行動とズレている：
+・絞り込めない（価格・年式・走行距離・車種・ボディタイプのフィルタ無し）。在庫が増えるほど目的の1台にたどり着けない。
+・比較できない（一覧で並べて見比べる導線無し）。
+・検索できない。
+提案：トップはグリッド一覧＋絞り込み検索を主役に、TikTok型は没入して見るサブ体験へ。「映える」より「探せる・比べられる」を優先するのが売上に直結。
+
+════════════════════════════════
+■ 品質：技術・コード面の指摘
+════════════════════════════════
+
+[パフォーマンス]
+・<img> に loading="lazy"・srcset が無い → 一覧の帯域と表示速度に効くので追加。
+・AdminDashboard.tsx 約119KB/2,884行、TikTokVideoGallery.tsx 約64KB/1,721行と巨大。機能単位で分割推奨。
+・recharts（重いチャート）をAbout用に読み込み → 影響確認。
+・※コード分割・画像/動画最適化・CDN preconnect・early-fetchは既に良く出来ている。
+
+[本番ビルドの作法]
+・console.log が本番でも約63個発火 → ビルド時に除去（esbuild drop:["console"] 等）。
+・エラーの握りつぶし：.catch(()=>{}) が多数。失敗が見えず原因究明を妨げる。最低限ログ/トースト表示を。
+・/api/* の CORS が * 。公開APIなら許可オリジンを絞る。
+
+[リポジトリ衛生]
+・未使用バックアップ *_3u4_baseline.tsx（Admin/Gallery）が残存 → 削除/退避。
+・.hls-cache/ .mp4-cache/ .sdr-thumb-cache/ .thumb-cache/ .upload-originals/ .db-backups/ 等のキャッシュ・DBバックアップが混入 → .gitignore で除外。
+
+[アクセシビリティ]
+・動画ギャラリーがマウス/タッチ専用。キーボード操作の代替とモーダルのフォーカストラップが無い。
+・スキップリンク無し。動画に字幕無し。
+・※セマンティック構造・FABのaria-label・パンくず/ページネーションのaria対応は出来ている。
+
+[テスト]
+・サーバー側ユニットテスト10ファイルあり。クライアント/E2Eが無い → 主要導線にPlaywright等のE2Eを。
+
+════════════════════════════════
+■ 良い点（維持すべき強み）
+════════════════════════════════
+・JSON-LD（AutoDealer）・OGP・geoメタなどSEOの部品は揃っている（ドメイン修正で活きる）。
+・画像最適化（WebP/JPEG 3サイズ）、HLG→SDR変換、Bunny CDN、early-fetch等、性能設計が本格的。
+・特商法ページ・古物商許可番号（第221190001219号）あり＝法令面OK。
+・管理画面が充実。LINE/電話/メール/Instagram導線あり。
+
+════════════════════════════════
+■ 対応おすすめ順
+════════════════════════════════
+1. ドメイン5箇所を chibagarage.com に統一（数分・最重要・リスクゼロ）
+2. sitemap.xml 生成 ＋ 車両ページのメタ/プリレンダ対応
+3. ページ別メタタグの設定（/buy /sell /about /consignment）
+4. 絞り込み検索付き一覧をトップに（戦略判断）
+5. 本番ビルドのconsole除去・エラー握りつぶし解消・リポジトリ衛生`;
+
+const btn = document.getElementById('copyBtn');
+btn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(PLAIN);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = PLAIN; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  btn.textContent = '✅ コピーした！';
+  btn.classList.add('done');
+  setTimeout(() => { btn.textContent = '📋 全文をコピー（担当者へ送る用）'; btn.classList.remove('done'); }, 1800);
+});
+</script>
+</body>
+</html>
