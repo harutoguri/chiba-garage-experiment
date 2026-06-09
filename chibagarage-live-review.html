@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>チバガレージ ライブサイト総評（2026-06-09実機調査）</title>
+<style>
+  :root { --bg:#0f1115; --card:#171a21; --txt:#e7eaf0; --muted:#9aa3b2;
+          --red:#ff5c5c; --yellow:#ffcf5c; --orange:#ff9f5c; --green:#5cd98a;
+          --line:#272b34; --accent:#4ea1ff; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--txt);
+         font-family:-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+         line-height:1.75; font-size:16px; }
+  .wrap { max-width:860px; margin:0 auto; padding:20px 16px 90px; }
+  h1 { font-size:23px; margin:8px 0 4px; }
+  .sub { color:var(--muted); font-size:13px; margin-bottom:18px; }
+  h2 { font-size:19px; margin:34px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  h3 { font-size:16px; margin:18px 0 6px; }
+  p { margin:8px 0; }
+  ul { margin:8px 0; padding-left:22px; }
+  li { margin:6px 0; }
+  code { background:#0a0c10; color:#ffd9a0; padding:1px 6px; border-radius:5px; font-size:13px; }
+  pre { background:#0a0c10; padding:12px 14px; border-radius:10px; overflow-x:auto;
+        font-size:12.5px; color:#cfe3ff; border:1px solid var(--line); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+          padding:14px 16px; margin:14px 0; }
+  .red{border-left:4px solid var(--red);} .yellow{border-left:4px solid var(--yellow);}
+  .orange{border-left:4px solid var(--orange);} .green{border-left:4px solid var(--green);}
+  .blue{border-left:4px solid var(--accent);}
+  .tag { display:inline-block; font-size:12px; font-weight:700; padding:2px 9px;
+         border-radius:999px; margin-right:8px; vertical-align:middle; }
+  .t-red{background:rgba(255,92,92,.16);color:var(--red);}
+  .t-yellow{background:rgba(255,207,92,.16);color:var(--yellow);}
+  .t-green{background:rgba(92,217,138,.16);color:var(--green);}
+  .t-blue{background:rgba(78,161,255,.16);color:var(--accent);}
+  .lead { background:linear-gradient(180deg,#1b2330,#171a21); border:1px solid var(--line);
+          border-radius:14px; padding:16px; margin:16px 0; font-size:15.5px; }
+  ol.steps { counter-reset:s; list-style:none; padding-left:0; }
+  ol.steps li { counter-increment:s; position:relative; padding:9px 8px 9px 46px; margin:7px 0;
+                background:var(--card); border:1px solid var(--line); border-radius:10px; }
+  ol.steps li::before { content:counter(s); position:absolute; left:10px; top:50%;
+                transform:translateY(-50%); width:26px; height:26px; border-radius:50%;
+                background:var(--accent); color:#04101f; font-weight:800; font-size:13px;
+                display:flex; align-items:center; justify-content:center; }
+  .copybar { position:sticky; top:0; z-index:10; background:rgba(15,17,21,.92);
+             backdrop-filter:blur(8px); padding:10px 0; margin:-20px -16px 12px; }
+  .copybtn { display:block; width:calc(100% - 32px); margin:0 16px; padding:13px;
+             border:none; border-radius:12px; background:var(--accent); color:#04101f;
+             font-size:16px; font-weight:800; cursor:pointer; transition:.15s; }
+  .copybtn:active { transform:scale(.985); } .copybtn.done { background:var(--green); }
+  strong { color:#fff; } .muted { color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin:8px 0; }
+  th,td { border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top; }
+  th { background:#0a0c10; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="copybar">
+    <button class="copybtn" id="copyBtn">📋 全文をコピー（担当者へ送る用）</button>
+  </div>
+
+  <h1>チバガレージ ライブサイト総評</h1>
+  <div class="sub">対象: https://chibagarage.com ／ 2026-06-09 実機（iPhone相当）レンダリング＋HTTP実測ベース ／ 全7ページ＋車両詳細導線を確認</div>
+
+  <div class="lead">
+    <strong>総括：</strong>前回指摘していたSEOの土台（ドメイン統一・sitemap・ルート別メタ・JSON-LD）は<strong>ほぼ全部直っていて大きく前進</strong>。
+    文章コンテンツ・法令ページの作り込みも良い。<br>
+    一方で<strong>「売上に直結するのに、もったいない」未対応が3つ</strong>残っている：
+    ①<strong>車両ごとのページ（URL）が無い</strong>、②<strong>SNSシェア画像が壊れている</strong>、③<strong>在庫を探す手段（検索・絞り込み）が無い</strong>。
+    さらに<strong>会社概要ページのアイコンが💩絵文字</strong>など、信頼を落とす要素がある。ここを直すと成績は確実に上がる。
+  </div>
+
+  <!-- ============ これはダメ ============ -->
+  <h2><span class="tag t-red">これはダメ</span>今すぐ直すべき（成績を落としている）</h2>
+
+  <div class="card red">
+    <h3>1. 車両ごとの独立ページ（URL）が存在しない ← 最大の機会損失</h3>
+    <p>在庫の「車両詳細」を押しても <strong>URLは <code>/</code> のまま</strong>で、その場で開くだけ。1台ごとのページが無い。実際、押した車両は <strong>「詳細情報はまだ登録されていません」</strong>と表示された。</p>
+    <p><strong>何がもったいないか：</strong></p>
+    <ul>
+      <li><strong>Googleに1台ずつ載らない</strong>。「CX5 中古 大崎市」「クラウン 中古 古川」等で個別車両が検索ヒットしない＝一番おいしい検索流入を丸ごと捨てている。</li>
+      <li><strong>URLを共有できない</strong>。LINEで「この車どう？」と1台のリンクを送れない。商談・拡散の致命傷。</li>
+      <li>サイトマップにも車両ページが1つも無い（静的7ページのみ）。</li>
+    </ul>
+    <p><strong>対応：</strong>車両ごとに <code>/vehicle/&lt;id&gt;</code> のような独立URLを作り、サーバー側で各車の <code>title / description / OGP / JSON-LD(Car/Vehicle, price, mileage, year)</code> を埋め込む。これが中古車サイトの心臓部。</p>
+  </div>
+
+  <div class="card red">
+    <h3>2. SNSシェア用の画像（OGP）が壊れている</h3>
+    <p>全ページが <code>og:image = https://chibagarage.com/og-image.jpg</code> を指しているが、その画像を実際に取得すると<strong>画像ではなくHTMLが返ってくる（ファイルが存在しない）</strong>。</p>
+    <p><strong>影響：</strong>LINE・Instagram・X等でURLを貼ったとき、<strong>サムネイル画像が出ない／崩れる</strong>。SNS集客が主体の店にとって、クリック率を大きく下げる「もったいない」バグ。</p>
+    <p><strong>対応：</strong>実在する <code>og-image.jpg</code>（1200×630推奨）を配置。理想は車両ページごとにその車の写真をOGPに。</p>
+  </div>
+
+  <div class="card red">
+    <h3>3. 会社概要ページのブランドアイコンが💩絵文字／ニュースが内輪ネタ</h3>
+    <p>会社概要(<code>/about</code>)の「チバガレージ CHIBA GARAGE」のロゴ枠が<strong>うんち（💩）の絵文字</strong>になっている。さらに最新情報に<strong>「高すぎて毎日おにぎり生活です。ご飯を恵んでください。」</strong>等の内輪ネタ投稿。</p>
+    <p><strong>影響：</strong>数十万〜百万円の買い物をする客が「会社概要」で信頼を確認する場所。ここで<strong>一気に不信感</strong>を与える。SNSのノリと、購入判断ページのトーンは分けるべき。</p>
+    <p><strong>対応：</strong>ロゴ画像を正式なものに差し替え。ニュースは「買取実績・入庫情報・キャンペーン」など信頼につながる内容に。</p>
+  </div>
+
+  <!-- ============ もったいない ============ -->
+  <h2><span class="tag t-yellow">もったいない</span>直すと成績が上がる（高効果）</h2>
+
+  <div class="card yellow">
+    <h3>4. 在庫を「探す」手段が無い（検索・絞り込み・並べ替えゼロ）</h3>
+    <p>全ページに検索ボックスも絞り込みも無し。在庫は縦スクロールで延々流れるだけで、<strong>価格・年式・走行距離・車種・ボディタイプで絞れない</strong>。さらに<strong>「成約済」の車が在庫一覧に大量に混在</strong>している。</p>
+    <p><strong>影響：</strong>買う気の客ほど「予算◯万円のミニバン」を探したい。探せない＝離脱。在庫が増えるほど悪化する。</p>
+    <p><strong>対応：</strong>一覧に絞り込み（価格帯・車種・年式・走行）と並べ替えを追加。成約済はデフォルト非表示か末尾へ。「映える」動画体験は残しつつ、<strong>探せる導線を主役</strong>に。</p>
+  </div>
+
+  <div class="card yellow">
+    <h3>5. ページの「タイトル(meta)」と「中身」がズレている</h3>
+    <p>SEOタイトルと実際の中身、メニュー名が三者バラバラなページがある：</p>
+    <table>
+      <tr><th>URL</th><th>SEOタイトル(meta)</th><th>実際の中身 / メニュー名</th></tr>
+      <tr><td>/consignment</td><td>「車の<strong>委託販売</strong>…個人売買より安心」</td><td>中身は「<strong>個人売買掲示板</strong>」。本文で“委託車両ではありません”と明記／メニュー名は「個人売買」</td></tr>
+      <tr><td>/trade</td><td>「中古車の<strong>個人売買サポート</strong>」</td><td>中身は「<strong>買取／販売</strong>」の入口（選択ページ）／メニュー名は「買取/販売」</td></tr>
+    </table>
+    <p><strong>影響：</strong>タイトルで来た人が中身の違いで離脱（直帰率↑）。Googleもタイトルと内容の不一致を嫌う。URL名・メニュー名・タイトル・中身を<strong>一本化</strong>すべき。</p>
+  </div>
+
+  <div class="card yellow">
+    <h3>6. トップ（在庫一覧）が重い・通信量がもったいない</h3>
+    <ul>
+      <li>トップ初回で<strong>約8MB</strong>転送。<strong>画像215枚を遅延読込なしで一括ロード</strong>（<code>loading="lazy"</code>無し、<code>srcset</code>無し）。</li>
+      <li>サムネが<strong>JPEGのまま・1枚あたり約235KB</strong>（WebP/AVIF化で30〜50%削減可）。サムネにしては大きすぎる。</li>
+      <li>動画要素が17個同時にDOM上に存在。</li>
+    </ul>
+    <p><strong>影響：</strong>モバイル回線で表示が重く、ギガも食う。直帰につながる。<strong>遅延読込＋WebP化＋一覧の仮想化（画面内だけ描画）＋成約済の出し分け</strong>で大幅に軽くなる。</p>
+  </div>
+
+  <div class="card yellow">
+    <h3>7. HTML本体が圧縮されていない</h3>
+    <p>JS/CSSは <code>gzip＋1年キャッシュ</code>で良好。だが<strong>HTMLドキュメント自体は約88KBを無圧縮</strong>（<code>br/gzip</code>を要求しても <code>content-encoding</code> 無し）。しかも <code>no-store</code> で毎回フル取得。</p>
+    <p><strong>対応：</strong>HTMLもgzip/brで配信すれば <strong>約88KB→15〜20KB</strong>。サーバー設定1つで効く、コスパの良い改善。</p>
+  </div>
+
+  <!-- ============ 細かいが効く ============ -->
+  <h2><span class="tag t-blue">細かいが効く</span>仕上げ</h2>
+  <div class="card blue">
+    <ul>
+      <li><strong>画像のalt属性が全滅</strong>（トップ215枚すべてalt無し、aboutも4/5無し）→ 画像検索流入・アクセシビリティの損。車種名を入れる。</li>
+      <li><strong>サムネのキャッシュが1日</strong>（<code>max-age=86400</code>）→ UUID固定で実質不変なので1年に。</li>
+      <li><strong>存在しないURLでもHTTP 200を返す（ソフト404）</strong>。表示は404だがステータスは200 → 正しく404を返す。</li>
+      <li><strong>連絡FABボタン（電話/メール/LINE/IG）が本文に被る</strong>位置。カードやボタンと重なって押しづらい場面がある。</li>
+      <li><strong>トップのキャッチが弱い</strong>：「次世代型中古車個人売買プラットフォーム誕生」は抽象的。ロゴ文字も明るい空背景で<strong>コントラスト不足で読みにくい</strong>。「大崎市の中古車買取・販売／LINEで写真査定」など具体便益を。</li>
+      <li><strong>診断用APIが本番に露出</strong>（<code>/api/debug-log</code>, <code>/api/net-capture</code>）→ 不要なら塞ぐ。</li>
+      <li><code>/submit</code>(出品)に固有メタ無し（canonicalが <code>/</code>）。フォームなら <code>noindex</code> 推奨。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 良くなった点 ============ -->
+  <h2><span class="tag t-green">改善済み・強み</span>前回から良くなった点</h2>
+  <div class="card green">
+    <ul>
+      <li><strong>ドメインを <code>chibagarage.com</code> に統一</strong>（canonical/OG/robots/sitemap）← 前回の致命傷を解消。</li>
+      <li><strong>sitemap.xml が実在</strong>し、<strong>robots.txt も正しいドメイン</strong>を指す。</li>
+      <li><strong>ルートごとにサーバー側でメタ（title/description/canonical/JSON-LD）を出力</strong>。SNSスクレイパにも見える。</li>
+      <li><strong>タイトルがキーワード入りで具体的</strong>（例:「車買取 大崎市・古川ならチバガレージ｜LINE写真査定・車検切れ相談OK」）。</li>
+      <li>買取/販売/会社概要/特商法ページの<strong>文章が充実</strong>。古物商許可番号・特商法表記など<strong>法令面はしっかり</strong>。</li>
+      <li><strong>TTFBが速い</strong>（軽いページで応答 60〜210ms）。静的アセットは<strong>gzip＋1年キャッシュ</strong>。</li>
+      <li>LINE/電話/メール/Instagram の<strong>連絡導線</strong>あり。</li>
+    </ul>
+  </div>
+
+  <!-- ============ 順番 ============ -->
+  <h2>対応おすすめ順</h2>
+  <ol class="steps">
+    <li><strong>車両ごとの独立ページ(URL)＋車両別メタ/OGP/JSON-LDを作る</strong>（SEO・共有の心臓部）</li>
+    <li><strong>OGP画像 og-image.jpg を実在させる</strong>（SNSシェアのサムネ復活）</li>
+    <li><strong>会社概要のロゴ(💩)差し替え＋ニュースのトーン見直し</strong>（信頼回復・すぐ直せる）</li>
+    <li><strong>在庫の検索/絞り込み/並べ替え＋成約済の出し分け</strong>（買う側の導線）</li>
+    <li><strong>メタとページ内容の不一致を一本化</strong>（/consignment・/trade）</li>
+    <li><strong>トップの軽量化</strong>（画像 遅延読込＋WebP化＋仮想化）＋HTMLのgzip化</li>
+    <li><strong>alt付与・404ステータス・サムネ長期キャッシュ・FAB位置・診断API遮断</strong></li>
+  </ol>
+
+</div>
+
+<script>
+const PLAIN = `チバガレージ ライブサイト総評
+対象: https://chibagarage.com ／ 2026-06-09 実機(iPhone相当)レンダリング＋HTTP実測ベース
+
+【総括】
+前回指摘していたSEOの土台（ドメイン統一・sitemap・ルート別メタ・JSON-LD）はほぼ全部直っていて大きく前進。文章・法令ページの作り込みも良い。
+一方で「売上に直結するのに、もったいない」未対応が3つ残る：①車両ごとのページ(URL)が無い ②SNSシェア画像が壊れている ③在庫を探す手段(検索・絞り込み)が無い。さらに会社概要のアイコンが💩絵文字など信頼を落とす要素もある。
+
+════════════════════════════════
+■ これはダメ：今すぐ直すべき（成績を落としている）
+════════════════════════════════
+
+1. 車両ごとの独立ページ(URL)が存在しない ← 最大の機会損失
+・在庫の「車両詳細」を押してもURLは / のまま。1台ごとのページが無い（押した車両は「詳細情報はまだ登録されていません」と表示）。
+・Googleに1台ずつ載らない → 「CX5 中古 大崎市」等で個別車両がヒットしない＝一番おいしい検索流入を捨てている。
+・URLを共有できない（LINEで1台のリンクを送れない）。サイトマップにも車両ページが0件。
+対応：/vehicle/<id> 等の独立URLを作り、サーバー側で各車の title/description/OGP/JSON-LD(Car: price/mileage/year) を埋め込む。中古車サイトの心臓部。
+
+2. SNSシェア用の画像(OGP)が壊れている
+・全ページが og:image = /og-image.jpg を指すが、実際に取得すると画像ではなくHTMLが返る（ファイルが存在しない）。
+・影響：LINE/Instagram/X等でURLを貼ってもサムネが出ない/崩れる。SNS集客が主体なら大きな損。
+対応：実在する og-image.jpg（1200×630推奨）を配置。理想は車両ごとにその車の写真をOGPに。
+
+3. 会社概要ページのブランドアイコンが💩絵文字／ニュースが内輪ネタ
+・/about の「チバガレージ CHIBA GARAGE」のロゴ枠がうんち(💩)絵文字。最新情報に「高すぎて毎日おにぎり生活です。ご飯を恵んでください。」等の内輪ネタ。
+・影響：高額の買い物で信頼を確認する場所。ここで一気に不信感を与える。
+対応：ロゴを正式なものに差し替え。ニュースは買取実績・入庫情報・キャンペーン等の信頼につながる内容に。
+
+════════════════════════════════
+■ もったいない：直すと成績が上がる（高効果）
+════════════════════════════════
+
+4. 在庫を「探す」手段が無い（検索・絞り込み・並べ替えゼロ）
+・全ページに検索も絞り込みも無し。価格/年式/走行距離/車種/ボディタイプで絞れない。さらに「成約済」が在庫一覧に大量に混在。
+・影響：買う気の客ほど「予算◯万円のミニバン」を探したい。探せない＝離脱。在庫が増えるほど悪化。
+対応：絞り込み＋並べ替えを追加。成約済はデフォルト非表示か末尾へ。動画体験は残しつつ「探せる導線」を主役に。
+
+5. ページのタイトル(meta)と中身がズレている
+・/consignment：metaは「車の委託販売…個人売買より安心」だが、中身は「個人売買掲示板」で“委託車両ではありません”と明記。メニュー名は「個人売買」。
+・/trade：metaは「中古車の個人売買サポート」だが、中身は「買取／販売」の入口。メニュー名は「買取/販売」。
+・影響：タイトルで来た人が中身の違いで離脱。Googleも不一致を嫌う。URL名・メニュー名・タイトル・中身を一本化すべき。
+
+6. トップ（在庫一覧）が重い・通信量がもったいない
+・トップ初回で約8MB転送。画像215枚を遅延読込なしで一括ロード（loading="lazy"無し、srcset無し）。
+・サムネがJPEGのまま・1枚約235KB（WebP/AVIF化で30〜50%削減可）。動画要素17個が同時にDOM上に存在。
+・影響：モバイルで重く、ギガも食う→直帰。
+対応：遅延読込＋WebP化＋一覧の仮想化（画面内だけ描画）＋成約済の出し分けで大幅軽量化。
+
+7. HTML本体が圧縮されていない
+・JS/CSSはgzip＋1年キャッシュで良好。だがHTML本体は約88KBを無圧縮（br/gzip要求でもcontent-encoding無し）＋no-storeで毎回フル取得。
+対応：HTMLもgzip/br配信で約88KB→15〜20KB。サーバー設定1つで効く。
+
+════════════════════════════════
+■ 細かいが効く：仕上げ
+════════════════════════════════
+・画像のalt属性が全滅（トップ215枚すべて無し、aboutも4/5無し）→ 画像検索・アクセシビリティの損。車種名を入れる。
+・サムネのキャッシュが1日（max-age=86400）→ UUID固定で実質不変なので1年に。
+・存在しないURLでもHTTP 200（ソフト404）→ 正しく404を返す。
+・連絡FAB（電話/メール/LINE/IG）が本文に被る位置。押しづらい場面あり。
+・トップのキャッチ「次世代型中古車個人売買プラットフォーム誕生」が抽象的。ロゴ文字も明るい空背景でコントラスト不足。具体便益（大崎市の買取・販売／LINEで写真査定）を。
+・診断用APIが本番に露出（/api/debug-log, /api/net-capture）→ 不要なら塞ぐ。
+・/submit(出品)に固有メタ無し（canonicalが /）。フォームならnoindex推奨。
+
+════════════════════════════════
+■ 改善済み・強み（前回から良くなった点）
+════════════════════════════════
+・ドメインを chibagarage.com に統一（canonical/OG/robots/sitemap）← 前回の致命傷を解消。
+・sitemap.xml が実在し、robots.txt も正しいドメインを指す。
+・ルートごとにサーバー側でメタ（title/description/canonical/JSON-LD）を出力。SNSスクレイパにも見える。
+・タイトルがキーワード入りで具体的（例：車買取 大崎市・古川ならチバガレージ｜LINE写真査定・車検切れ相談OK）。
+・買取/販売/会社概要/特商法ページの文章が充実。古物商許可番号・特商法表記など法令面はしっかり。
+・TTFBが速い（軽いページで応答60〜210ms）。静的アセットはgzip＋1年キャッシュ。
+・LINE/電話/メール/Instagramの連絡導線あり。
+
+════════════════════════════════
+■ 対応おすすめ順
+════════════════════════════════
+1. 車両ごとの独立ページ(URL)＋車両別メタ/OGP/JSON-LDを作る（SEO・共有の心臓部）
+2. OGP画像 og-image.jpg を実在させる（SNSシェアのサムネ復活）
+3. 会社概要のロゴ(💩)差し替え＋ニュースのトーン見直し（信頼回復・すぐ直せる）
+4. 在庫の検索/絞り込み/並べ替え＋成約済の出し分け（買う側の導線）
+5. メタとページ内容の不一致を一本化（/consignment・/trade）
+6. トップの軽量化（画像 遅延読込＋WebP化＋仮想化）＋HTMLのgzip化
+7. alt付与・404ステータス・サムネ長期キャッシュ・FAB位置・診断API遮断`;
+
+const btn = document.getElementById('copyBtn');
+btn.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(PLAIN); }
+  catch(e){ const ta=document.createElement('textarea'); ta.value=PLAIN; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+  btn.textContent='✅ コピーした！'; btn.classList.add('done');
+  setTimeout(()=>{ btn.textContent='📋 全文をコピー（担当者へ送る用）'; btn.classList.remove('done'); }, 1800);
+});
+</script>
+</body>
+</html>
